@@ -1,0 +1,59 @@
+<LinearLayout
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <TextView
+        android:id="@+id/prefecturesName"
+        android:text="都道府県名"
+        android:textSize="50dp"
+        android:padding="44dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"/>
+
+    <GridLayout
+        android:columnCount="2"
+        android:rowCount="2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="40dp"
+        android:layout_gravity="center_horizontal">
+
+        <Button
+            android:layout_column="0"
+            android:layout_row="0"
+            android:id="@+id/btAnswer_1"
+            android:text="市"
+            android:layout_margin="24dp"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"/>
+        <Button
+            android:layout_column="1"
+            android:layout_row="0"
+            android:id="@+id/btAnswer_2"
+            android:text="市"
+            android:layout_margin="24dp"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"/>
+        <Button
+            android:layout_column="0"
+            android:layout_row="1"
+            android:id="@+id/btAnswer_3"
+            android:text="市"
+            android:layout_margin="24dp"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"/>
+        <Button
+            android:layout_column="1"
+            android:layout_row="1"
+            android:id="@+id/btAnswer_4"
+            android:text="市"
+            android:layout_margin="24dp"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"/>
+
+    </GridLayout>
+
+</LinearLayout>
