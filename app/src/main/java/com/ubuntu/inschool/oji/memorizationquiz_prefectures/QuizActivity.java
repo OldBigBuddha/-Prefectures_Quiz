@@ -12,6 +12,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
+import android.widget.TextView;
 
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
@@ -23,9 +24,12 @@ import org.json.JSONObject;
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import cz.msebera.android.httpclient.Header;
 
@@ -34,6 +38,7 @@ public class QuizActivity extends AppCompatActivity implements Runnable, LoaderM
     private ProgressDialog progressDialog   = null;
     private Thread         thread           = null;
 
+    private TextView       question         = null;
     private Button         btAnswer1        = null;
     private Button         btAnswer2        = null;
     private Button         btAnswer3        = null;
@@ -46,15 +51,14 @@ public class QuizActivity extends AppCompatActivity implements Runnable, LoaderM
     private final String   FILES            = "files";
     private final String   RAW_URL          = "raw_url";
     private final String   QFILENAME        = "Todoufuken_Kenchoushozaichi.csv";
-    private final String   DUMMY            = "Dummy.csv";
+    private final String   DFILENAME        = "Dummy.csv";
 
     private FileManager    QFileManager     = null;
     private FileManager    DFileManager     = null;
 
     //問題・ダミーデータ
-    private Map<String, String>     prefecturs_Name     = new HashMap<>();      //都道府県：県庁所在地
-    private Map<Integer, String>    prefecturs_Number   = new HashMap<>();      //番号    ：都道府県
-    private List<String>            prefecturs_dummy    = new ArrayList<>();    //ダミー用
+    private Map<Integer, Map<String, String>>       prefecturs_Name     = new HashMap<>();      //番号：都道府県：県庁所在地
+    private List<String>                            prefecturs_dummy    = new ArrayList<>();    //ダミー用
 
 
     @Override
@@ -80,7 +84,7 @@ public class QuizActivity extends AppCompatActivity implements Runnable, LoaderM
     @Override
     public void run() {
         QFileManager = new FileManager(new File(getFilesDir().toString() + "/" + QFILENAME));
-        DFileManager = new FileManager(new File(getFilesDir().toString() + "/" + DUMMY));
+        DFileManager = new FileManager(new File(getFilesDir().toString() + "/" + DFILENAME));
 
         try {
             Thread.sleep(1800);
@@ -111,12 +115,12 @@ public class QuizActivity extends AppCompatActivity implements Runnable, LoaderM
                     object = jsonArray.getJSONObject(i);
                     if (object.optJSONObject(FILES).optJSONObject(QFILENAME) != null) {
                         JSONObject QTargetJSON = object.getJSONObject(FILES).getJSONObject(QFILENAME);
-                        connenct(QTargetJSON.getString(RAW_URL), Datatype.QUIESTION);
+                        connenct(QTargetJSON.getString(RAW_URL), Datatype.QUESITION);
                     }
 
-                    if (object.optJSONObject(FILES).optJSONObject(DUMMY) != null) {
-                        JSONObject DTargetJSON = object.getJSONObject(FILES).getJSONObject(DUMMY);
-                        connenct(DTargetJSON.getString(RAW_URL), Datatype.QUIESTION);
+                    if (object.optJSONObject(FILES).optJSONObject(DFILENAME) != null) {
+                        JSONObject DTargetJSON = object.getJSONObject(FILES).getJSONObject(DFILENAME);
+                        connenct(DTargetJSON.getString(RAW_URL), Datatype.DUMMY);
                     }
                 }
             } catch (JSONException e) {
@@ -137,7 +141,6 @@ public class QuizActivity extends AppCompatActivity implements Runnable, LoaderM
             @Override
             public void onSuccess(int statusCode, Header[] headers, byte[] bytes) {
                 Log.d("Connect", "Succeed");
-
                 try {
                     saveCSV(new String(bytes, "UTF-8"), datatype);
                     progressDialog.dismiss();
@@ -155,16 +158,44 @@ public class QuizActivity extends AppCompatActivity implements Runnable, LoaderM
 
     //取得したCSVを保存
     public void saveCSV(String csv, Datatype datatype) {
-        if (datatype == Datatype.QUIESTION) {
+        if (datatype == Datatype.QUESITION) {
             QFileManager.createFile();
             QFileManager.setFileContents(csv);
             QFileManager.write();
-        } else if (datatype == Datatype.DUMMY) {
+            parseCSV(QFileManager, Datatype.QUESITION);
+        }
+
+        if (datatype == Datatype.DUMMY) {
             DFileManager.createFile();
             DFileManager.setFileContents(csv);
             DFileManager.write();
+            parseCSV(DFileManager, Datatype.DUMMY);
         }
     }
+
+    public void parseCSV(FileManager fileManager, Datatype datatype) {
+        String csv = fileManager.read();
+        int count = 0;
+        for (String s:csv.split("\n")) {
+            String[] value = s.split(",");
+            if (count == 0) {
+                count++;
+                continue;
+            } else {
+                if (datatype == Datatype.QUESITION) {
+                    int number = Integer.valueOf(value[0]);
+                    prefecturs_Name.put(number, new HashMap<String, String>());
+                    prefecturs_Name.get(number).put(value[1], value[2]);
+//                    questionNumber.add(count);
+                } else if (datatype == Datatype.DUMMY) {
+                    prefecturs_dummy.add(value[0]);
+//                    dummyNumber.add(count);
+                }
+                count++;
+            }
+        }
+        Log.d("Parse", "Finished!");
+        }
 
     //ネット接続状況取得
     private boolean isOnline() {
@@ -176,9 +207,19 @@ public class QuizActivity extends AppCompatActivity implements Runnable, LoaderM
         return (info != null && info.isConnected());
     }
 
+    public void setText() {
+        Random random = new Random();
+        Iterator<String> iterator = prefecturs_Name.get(random).keySet().iterator();
+        question.setText(iterator.next());
+        prefecturs_Name.get(random);
+    }
+
     private Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
+
+            question  = (TextView)findViewById(R.id.prefecturesName);
+
             btAnswer1 = (Button)findViewById(R.id.btAnswer_1);
             btAnswer2 = (Button)findViewById(R.id.btAnswer_2);
             btAnswer3 = (Button)findViewById(R.id.btAnswer_3);
@@ -195,5 +236,5 @@ public class QuizActivity extends AppCompatActivity implements Runnable, LoaderM
 }
 
 enum Datatype {
-    DUMMY,QUIESTION
+    DUMMY, QUESITION
 }

@@ -66,15 +66,20 @@ public class FileManager {
                     fileContents.append(readLine);
                     readLine = bufferedReader.readLine();
                 }
-                bufferedReader.close();
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             } catch (IOException e) {
                 e.printStackTrace();
+            }finally {
+                try {
+                    bufferedReader.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
 
-        return "";
+        return fileContents.toString();
     }
 
     //File書き出し
