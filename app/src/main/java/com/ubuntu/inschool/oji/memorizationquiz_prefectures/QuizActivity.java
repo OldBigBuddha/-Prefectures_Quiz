@@ -122,6 +122,7 @@ public class QuizActivity extends AppCompatActivity implements Runnable, LoaderM
                         JSONObject DTargetJSON = object.getJSONObject(FILES).getJSONObject(DFILENAME);
                         connenct(DTargetJSON.getString(RAW_URL), Datatype.DUMMY);
                     }
+//                    setText();
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -143,7 +144,9 @@ public class QuizActivity extends AppCompatActivity implements Runnable, LoaderM
                 Log.d("Connect", "Succeed");
                 try {
                     saveCSV(new String(bytes, "UTF-8"), datatype);
-                    progressDialog.dismiss();
+                    if (datatype == Datatype.DUMMY) {
+                        progressDialog.dismiss();
+                    }
                 } catch (UnsupportedEncodingException e) {
                     e.printStackTrace();
                 }
@@ -195,6 +198,7 @@ public class QuizActivity extends AppCompatActivity implements Runnable, LoaderM
             }
         }
         Log.d("Parse", "Finished!");
+        if (datatype == Datatype.DUMMY) setText();
         }
 
     //ネット接続状況取得

@@ -13,6 +13,8 @@ public class MainActivity extends AppCompatActivity {
     private Button startButton  = null;
     private Intent intent       = null;
 
+    public final static String BR = System.getProperty("line.separator");
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

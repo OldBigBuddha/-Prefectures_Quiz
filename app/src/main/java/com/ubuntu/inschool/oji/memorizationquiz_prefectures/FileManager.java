@@ -63,7 +63,7 @@ public class FileManager {
 
                 readLine = bufferedReader.readLine();
                 while (readLine != null) {
-                    fileContents.append(readLine);
+                    fileContents.append(readLine).append(MainActivity.BR);
                     readLine = bufferedReader.readLine();
                 }
             } catch (FileNotFoundException e) {
