@@ -11,6 +11,7 @@ import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -24,7 +25,6 @@ import org.json.JSONObject;
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -38,7 +38,7 @@ public class QuizActivity extends AppCompatActivity implements Runnable, LoaderM
     private ProgressDialog progressDialog   = null;
     private Thread         thread           = null;
 
-    private TextView       question         = null;
+    private TextView       question_View    = null;
     private Button         btAnswer1        = null;
     private Button         btAnswer2        = null;
     private Button         btAnswer3        = null;
@@ -59,6 +59,9 @@ public class QuizActivity extends AppCompatActivity implements Runnable, LoaderM
     //問題・ダミーデータ
     private Map<Integer, Map<String, String>>       prefecturs_Name     = new HashMap<>();      //番号：都道府県：県庁所在地
     private List<String>                            prefecturs_dummy    = new ArrayList<>();    //ダミー用
+
+    private String question_data = "";
+    private String answer_data   = "";
 
 
     @Override
@@ -212,24 +215,45 @@ public class QuizActivity extends AppCompatActivity implements Runnable, LoaderM
     }
 
     public void setText() {
-        int random = new Random().nextInt(47);
+        int random = 0;
+        random = (int)(Math.random() * 47);
+        while (random == 0) random = (int)(Math.random() * 47);
         if (!prefecturs_Name.get(random).isEmpty()) {
         Iterator<String> iterator = prefecturs_Name.get(random).keySet().iterator();
-        question.setText(iterator.next());
+            question_data = iterator.next();
+            answer_data   = prefecturs_Name.get(random).get(question_data);
+        question_View.setText(question_data);
         }
 //        prefecturs_Name.get(random);
+    }
+
+    //判定
+    public boolean isAnswer() {
+        return false;
     }
 
     private Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
 
-            question  = (TextView)findViewById(R.id.prefecturesName);
+            question_View = (TextView)findViewById(R.id.prefecturesName);
+
+            View.OnClickListener onClickListener = new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+//                    isAnswer();
+                    setText();
+                }
+            };
 
             btAnswer1 = (Button)findViewById(R.id.btAnswer_1);
+            btAnswer1.setOnClickListener(onClickListener);
             btAnswer2 = (Button)findViewById(R.id.btAnswer_2);
+            btAnswer2.setOnClickListener(onClickListener);
             btAnswer3 = (Button)findViewById(R.id.btAnswer_3);
+            btAnswer3.setOnClickListener(onClickListener);
             btAnswer4 = (Button)findViewById(R.id.btAnswer_4);
+            btAnswer4.setOnClickListener(onClickListener);
 
             getLoaderManager().initLoader(0,null,QuizActivity.this);
 //            if (isOnline()) {
