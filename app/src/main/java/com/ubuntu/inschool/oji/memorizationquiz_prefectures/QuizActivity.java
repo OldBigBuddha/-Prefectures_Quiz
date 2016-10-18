@@ -122,7 +122,6 @@ public class QuizActivity extends AppCompatActivity implements Runnable, LoaderM
                         JSONObject DTargetJSON = object.getJSONObject(FILES).getJSONObject(DFILENAME);
                         connenct(DTargetJSON.getString(RAW_URL), Datatype.DUMMY);
                     }
-//                    setText();
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -144,6 +143,7 @@ public class QuizActivity extends AppCompatActivity implements Runnable, LoaderM
                 Log.d("Connect", "Succeed");
                 try {
                     saveCSV(new String(bytes, "UTF-8"), datatype);
+                    setText();
                     if (datatype == Datatype.DUMMY) {
                         progressDialog.dismiss();
                     }
@@ -198,7 +198,7 @@ public class QuizActivity extends AppCompatActivity implements Runnable, LoaderM
             }
         }
         Log.d("Parse", "Finished!");
-        if (datatype == Datatype.DUMMY) setText();
+//        if (datatype == Datatype.DUMMY) setText();
         }
 
     //ネット接続状況取得
@@ -212,10 +212,12 @@ public class QuizActivity extends AppCompatActivity implements Runnable, LoaderM
     }
 
     public void setText() {
-        Random random = new Random();
+        int random = new Random().nextInt(47);
+        if (!prefecturs_Name.get(random).isEmpty()) {
         Iterator<String> iterator = prefecturs_Name.get(random).keySet().iterator();
         question.setText(iterator.next());
-        prefecturs_Name.get(random);
+        }
+//        prefecturs_Name.get(random);
     }
 
     private Handler handler = new Handler() {
