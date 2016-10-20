@@ -15,6 +15,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
@@ -254,8 +255,13 @@ public class QuizActivity extends AppCompatActivity implements Runnable, LoaderM
     }
 
     //判定
-    public boolean isAnswer() {
-        return false;
+    public void judgeAnswer(Button button) {
+        String userAnswer = button.getText().toString();
+        if (answer_data.equals(userAnswer)) {
+            Toast.makeText(this, "正解！", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(this,"残念",Toast.LENGTH_SHORT).show();
+        }
     }
 
     private Handler handler = new Handler() {
@@ -264,10 +270,10 @@ public class QuizActivity extends AppCompatActivity implements Runnable, LoaderM
 
             question_View = (TextView)findViewById(R.id.prefecturesName);
 
-            View.OnClickListener onClickListener = new View.OnClickListener() {
+            Button.OnClickListener onClickListener = new Button.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-//                    isAnswer();
+                    judgeAnswer((Button)view);
                     setQuestion();
                     setAnswers();
                 }
