@@ -35,6 +35,8 @@ import cz.msebera.android.httpclient.Header;
 
 public class QuizActivity extends AppCompatActivity implements Runnable, LoaderManager.LoaderCallbacks<JSONArray> {
 
+    public static final int PREFECTURSNUMBER = 47;
+
     private ProgressDialog progressDialog   = null;
     private Thread         thread           = null;
 
@@ -57,8 +59,9 @@ public class QuizActivity extends AppCompatActivity implements Runnable, LoaderM
     private FileManager    DFileManager     = null;
 
     //問題・ダミーデータ
-    private Map<Integer, Map<String, String>>       prefecturs_Name     = new HashMap<>();      //番号：都道府県：県庁所在地
-    private List<String>                            prefecturs_dummy    = new ArrayList<>();    //ダミー用
+    private Map<Integer, Map<String, String>>       prefecturs_Name     = new HashMap<>();          //番号：都道府県：県庁所在地
+    private List<String>                            prefecturs_dummy    = new ArrayList<>();        //ダミー用
+    private ShuffleRandom                           random              = null;                     //ランダム変数
 
     private String question_data = "";
     private String answer_data   = "";
@@ -88,6 +91,7 @@ public class QuizActivity extends AppCompatActivity implements Runnable, LoaderM
     public void run() {
         QFileManager = new FileManager(new File(getFilesDir().toString() + "/" + QFILENAME));
         DFileManager = new FileManager(new File(getFilesDir().toString() + "/" + DFILENAME));
+        random       = new ShuffleRandom(1, QuizActivity.PREFECTURSNUMBER);
 
         try {
             Thread.sleep(1800);
@@ -215,16 +219,15 @@ public class QuizActivity extends AppCompatActivity implements Runnable, LoaderM
     }
 
     public void setText() {
-        int random = 0;
-        random = (int)(Math.random() * 47);
-        while (random == 0) random = (int)(Math.random() * 47);
-        if (!prefecturs_Name.get(random).isEmpty()) {
-        Iterator<String> iterator = prefecturs_Name.get(random).keySet().iterator();
+
+        int r = random.getRandomInt();
+
+        if (!prefecturs_Name.get(r).isEmpty()) {
+        Iterator<String> iterator = prefecturs_Name.get(r).keySet().iterator();
             question_data = iterator.next();
-            answer_data   = prefecturs_Name.get(random).get(question_data);
+            answer_data   = prefecturs_Name.get(r).get(question_data);
         question_View.setText(question_data);
         }
-//        prefecturs_Name.get(random);
     }
 
     //判定
