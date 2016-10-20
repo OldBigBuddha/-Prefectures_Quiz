@@ -3,6 +3,7 @@ package com.ubuntu.inschool.oji.memorizationquiz_prefectures;
 import android.app.LoaderManager;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.Loader;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -25,17 +26,15 @@ import org.json.JSONObject;
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 import cz.msebera.android.httpclient.Header;
 
 public class QuizActivity extends AppCompatActivity implements Runnable, LoaderManager.LoaderCallbacks<JSONArray> {
-
-    public static final int PREFECTURSNUMBER = 47;
 
     private ProgressDialog progressDialog   = null;
     private Thread         thread           = null;
@@ -47,7 +46,6 @@ public class QuizActivity extends AppCompatActivity implements Runnable, LoaderM
     private Button         btAnswer4        = null;
 
     private JSONLoader     jsonLoader       = null;
-    private JSONArray      array            = null;
     private JSONObject     object           = null;
 
     private final String   FILES            = "files";
@@ -61,7 +59,12 @@ public class QuizActivity extends AppCompatActivity implements Runnable, LoaderM
     //問題・ダミーデータ
     private Map<Integer, Map<String, String>>       prefecturs_Name     = new HashMap<>();          //番号：都道府県：県庁所在地
     private List<String>                            prefecturs_dummy    = new ArrayList<>();        //ダミー用
-    private ShuffleRandom                           random              = null;                     //ランダム変数
+    private List<String>                            answers             = new ArrayList<>();
+    private int                                     questionsNumber     = 10;
+    private int                                     nowQuestionNum      = 0;
+
+    //ランダム変数
+    private ShuffleRandom setQuestionRandom, setAnswersRnadom,dummyRandom;
 
     private String question_data = "";
     private String answer_data   = "";
@@ -71,6 +74,9 @@ public class QuizActivity extends AppCompatActivity implements Runnable, LoaderM
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_quiz);
+
+        Intent intent = getIntent();
+        questionsNumber = intent.getIntExtra(MainActivity.INTENTKEY, 10);
 
         //ロードダイアログ生成
         progressDialog = new ProgressDialog(this);
@@ -91,7 +97,8 @@ public class QuizActivity extends AppCompatActivity implements Runnable, LoaderM
     public void run() {
         QFileManager = new FileManager(new File(getFilesDir().toString() + "/" + QFILENAME));
         DFileManager = new FileManager(new File(getFilesDir().toString() + "/" + DFILENAME));
-        random       = new ShuffleRandom(1, QuizActivity.PREFECTURSNUMBER);
+        setQuestionRandom = new ShuffleRandom(1, MainActivity.PREFECTURSNUMBER);
+        setAnswersRnadom = new ShuffleRandom(1,4);
 
         try {
             Thread.sleep(1800);
@@ -150,8 +157,9 @@ public class QuizActivity extends AppCompatActivity implements Runnable, LoaderM
                 Log.d("Connect", "Succeed");
                 try {
                     saveCSV(new String(bytes, "UTF-8"), datatype);
-                    setText();
-                    if (datatype == Datatype.DUMMY) {
+                    if (!prefecturs_Name.isEmpty() && !prefecturs_dummy.isEmpty()) {
+                        setQuestion();
+                        setAnswers();
                         progressDialog.dismiss();
                     }
                 } catch (UnsupportedEncodingException e) {
@@ -204,8 +212,8 @@ public class QuizActivity extends AppCompatActivity implements Runnable, LoaderM
                 count++;
             }
         }
+        if (!prefecturs_dummy.isEmpty()) dummyRandom = new ShuffleRandom(1, prefecturs_dummy.size());
         Log.d("Parse", "Finished!");
-//        if (datatype == Datatype.DUMMY) setText();
         }
 
     //ネット接続状況取得
@@ -218,9 +226,9 @@ public class QuizActivity extends AppCompatActivity implements Runnable, LoaderM
         return (info != null && info.isConnected());
     }
 
-    public void setText() {
+    public void setQuestion() {
 
-        int r = random.getRandomInt();
+        int r = setQuestionRandom.getRandomInt();
 
         if (!prefecturs_Name.get(r).isEmpty()) {
         Iterator<String> iterator = prefecturs_Name.get(r).keySet().iterator();
@@ -228,6 +236,21 @@ public class QuizActivity extends AppCompatActivity implements Runnable, LoaderM
             answer_data   = prefecturs_Name.get(r).get(question_data);
         question_View.setText(question_data);
         }
+        answers.add(answer_data);
+    }
+
+    public void setAnswers() {
+        for (int i = 0; i < 3; i++) {
+            int r = dummyRandom.getRandomInt();
+            answers.add(prefecturs_dummy.get(r));
+        }
+        Collections.shuffle(answers);
+        btAnswer1.setText(answers.get(0));
+        btAnswer2.setText(answers.get(1));
+        btAnswer3.setText(answers.get(2));
+        btAnswer4.setText(answers.get(3));
+
+        answers = new ArrayList<>();
     }
 
     //判定
@@ -245,7 +268,8 @@ public class QuizActivity extends AppCompatActivity implements Runnable, LoaderM
                 @Override
                 public void onClick(View view) {
 //                    isAnswer();
-                    setText();
+                    setQuestion();
+                    setAnswers();
                 }
             };
 
