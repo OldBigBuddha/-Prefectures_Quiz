@@ -9,7 +9,7 @@ android {
         minSdkVersion 22
         targetSdkVersion 24
         versionCode 1
-        versionName "1.0"
+        versionName "1.0.0"
     }
     buildTypes {
         release {
@@ -24,4 +24,20 @@ dependencies {
     testCompile 'junit:junit:4.12'
     compile 'com.android.support:appcompat-v7:24.2.0'
     compile 'com.loopj.android:android-async-http:1.4.9'
+}
+
+android {
+
+    applicationVariants.all { variant ->
+        if (variant.buildType.name.equals("release")) {
+            variant.outputs.each { output ->
+                if (output.outputFile != null && output.outputFile.name.endsWith('.apk')) {
+                    // Rename APK
+                    def versionName = defaultConfig.versionName
+                    def newName = "MemorizationQuiz_Prefectures_v${versionName}.apk"
+                    output.outputFile = new File(output.outputFile.parent, newName)
+                }
+            }
+        }
+    }
 }

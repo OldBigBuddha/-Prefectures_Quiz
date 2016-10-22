@@ -340,10 +340,11 @@ public class QuizActivity extends AppCompatActivity implements Runnable, LoaderM
                         intent.putExtra(QuizActivity.INTENTKEY_MAP, (Serializable) missMap);
                         intent.putExtra(QuizActivity.INTENTKEY_NUM, questionsNumber);
                         startActivity(intent);
+                    } else {
+                        counter_View.setText(String.format("第%02d問", nowQuestionNum));
+                        setQuestion();
+                        setAnswers();
                     }
-                    counter_View.setText(String.format("第%02d問", nowQuestionNum));
-                    setQuestion();
-                    setAnswers();
                 }
             };
 

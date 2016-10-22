@@ -2,6 +2,7 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#87c4e0"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <TextView
@@ -17,45 +18,33 @@
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"/>
 
+    <ImageView
+        android:src="@drawable/nihonchizu"
+        android:layout_gravity="center_horizontal"
+        android:layout_width="250dp"
+        android:layout_height="250dp" />
+
     <Button
-        android:id="@+id/oneButton"
+        android:id="@+id/studyButton"
+        android:background="#96e070"
+        android:text="学習する"
         android:textSize="30dp"
-        android:text="10問"
+        android:layout_margin="16dp"
+        android:gravity="center_horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <Button
+        android:id="@+id/quizButton"
+        android:background="#96e070"
+        android:textSize="30dp"
+        android:text="問題を解く"
         android:layout_gravity="center_horizontal"
         android:gravity="center_horizontal"
         android:layout_margin="16dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
-    <Button
-        android:id="@+id/twoButton"
-        android:textSize="30dp"
-        android:text="20問"
-        android:layout_gravity="center_horizontal"
-        android:gravity="center_horizontal"
-        android:layout_margin="16dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-
-    <Button
-        android:id="@+id/threeButton"
-        android:textSize="30dp"
-        android:text="30問"
-        android:layout_gravity="center_horizontal"
-        android:gravity="center_horizontal"
-        android:layout_margin="16dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-
-    <Button
-        android:id="@+id/allButton"
-        android:textSize="30dp"
-        android:text="全部"
-        android:layout_gravity="center_horizontal"
-        android:gravity="center_horizontal"
-        android:layout_margin="16dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
 
 
 </LinearLayout>

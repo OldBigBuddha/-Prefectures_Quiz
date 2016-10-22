@@ -1,6 +1,8 @@
 package com.ubuntu.inschool.oji.memorizationquiz_prefectures;
 
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -10,12 +12,12 @@ import java.io.BufferedReader;
 
 public class MainActivity extends AppCompatActivity {
 
-    private Button btOne    = null;
-    private Button btTwo    = null;
-    private Button btThree  = null;
-    private Button btAll    = null;
+    private Button btStartQuiz  = null;
+    private Button btStartStudy = null;
 
-    private Intent intent   = null;
+    private Intent  intent   = null;
+    private int     count    = 0;
+    private boolean isCancel = false;
 
     public static final String  INTENTKEY           = "question";
     public static final String  BR                  = System.getProperty("line.separator");
@@ -27,43 +29,50 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        btOne   = (Button)findViewById(R.id.oneButton);
-        btOne.setOnClickListener(new Button.OnClickListener() {
+        btStartQuiz  = (Button)findViewById(R.id.quizButton);
+        btStartQuiz.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                intent = new Intent(MainActivity.this, QuizActivity.class);
-                intent.putExtra(INTENTKEY, 10);
-                startActivity(intent);
-            }
-        });
-        btTwo   = (Button)findViewById(R.id.twoButton);
-        btTwo.setOnClickListener(new Button.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                intent = new Intent(MainActivity.this, QuizActivity.class);
-                intent.putExtra(INTENTKEY, 20);
-                startActivity(intent);
-            }
-        });
+                intent    = new Intent(MainActivity.this, QuizActivity.class);
+                final CharSequence[] ITEMS  = {"10問","20問","30問","40問","47問"};
+                final AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                builder.setTitle("何問解きますか？");
+                builder.setItems(ITEMS, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int which) {
 
-        btThree = (Button)findViewById(R.id.threeButton);
-        btThree.setOnClickListener(new Button.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                intent = new Intent(MainActivity.this, QuizActivity.class);
-                intent.putExtra(INTENTKEY, 30);
-                startActivity(intent);
-            }
-        });
+                        switch (which) {
+                            case 0:
+                                count = 10;
+                                break;
+                            case 1:
+                                count = 20;
+                                break;
+                            case 2:
+                                count = 30;
+                                break;
+                            case 3:
+                                count = 40;
+                                break;
+                            case 4:
+                                count = 47;
+                                break;
+                        }
+                        intent.putExtra(INTENTKEY, count);
+                        startActivity(intent);
+                    }
 
-        btAll   = (Button)findViewById(R.id.allButton);
-        btAll.setOnClickListener(new Button.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                intent = new Intent(MainActivity.this, QuizActivity.class);
-                intent.putExtra(INTENTKEY, MainActivity.PREFECTURSNUMBER);
-                startActivity(intent);
+                });
+                builder.setNegativeButton("やっぱやめる", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int which) {
+                        //キャンセル
+                    }
+                });
+                builder.create().show();
             }
         });
+        btStartStudy = (Button)findViewById(R.id.studyButton);
+
     }
 }
