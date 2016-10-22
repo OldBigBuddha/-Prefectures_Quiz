@@ -46,10 +46,10 @@ public class QuizActivity extends AppCompatActivity implements Runnable, LoaderM
     private TextView       counter_View     = null;
     private TextView       question_View    = null;
 
-    private Button         btAnswer1        = null;
-    private Button         btAnswer2        = null;
-    private Button         btAnswer3        = null;
-    private Button         btAnswer4        = null;
+    private TextView       btAnswer1        = null;
+    private TextView       btAnswer2        = null;
+    private TextView       btAnswer3        = null;
+    private TextView       btAnswer4        = null;
 
     private ImageView      TFImage1         = null;
     private ImageView      TFImage2         = null;
@@ -227,7 +227,7 @@ public class QuizActivity extends AppCompatActivity implements Runnable, LoaderM
                 count++;
             }
         }
-        if (!prefecturs_dummy.isEmpty()) dummyRandom = new ShuffleRandom(1, prefecturs_dummy.size());
+        if (!prefecturs_dummy.isEmpty()) dummyRandom = new ShuffleRandom(1, prefecturs_dummy.size() - 1);
         Log.d("Parse", "Finished!");
         }
 
@@ -269,34 +269,34 @@ public class QuizActivity extends AppCompatActivity implements Runnable, LoaderM
     }
 
     //判定
-    public void judgeAnswer(Button button) {
-        String userAnswer = button.getText().toString();
+    public void judgeAnswer(TextView textView) {
+        String userAnswer = textView.getText().toString();
         boolean isAnswer;
         if (answer_data.equals(userAnswer)) isAnswer = true;
         else                                isAnswer = false;
 
-        if (button == btAnswer1) setImage(TFImage1, isAnswer);
-        if (button == btAnswer2) setImage(TFImage2, isAnswer);
-        if (button == btAnswer3) setImage(TFImage3, isAnswer);
-        if (button == btAnswer4) setImage(TFImage4, isAnswer);
+        if (textView == btAnswer1) setImage(TFImage1, isAnswer);
+        if (textView == btAnswer2) setImage(TFImage2, isAnswer);
+        if (textView == btAnswer3) setImage(TFImage3, isAnswer);
+        if (textView == btAnswer4) setImage(TFImage4, isAnswer);
 
         isAnswered = !isAnswered;
    }
 
-    public void setImage(ImageView image, boolean tf) {
+    public void setImage(final ImageView image, boolean tf) {
+        image.setVisibility(View.VISIBLE);
         selectedImage = image;
-        if (tf)  selectedImage.setImageResource(R.drawable.true_img);
-        if (!tf) selectedImage.setImageResource(R.drawable.false_img);
+        if (tf)  image.setImageResource(R.drawable.true_img);
+        if (!tf) image.setImageResource(R.drawable.false_img);
 
         Handler  handler  = new Handler();
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
                 selectedImage.setVisibility(View.INVISIBLE);
-            }
+                }
         };
-        handler.postDelayed(runnable, 1000);
-//        selectedImage = null;
+        handler.postDelayed(runnable, 500);
     }
 
     private Handler handler = new Handler() {
@@ -310,7 +310,7 @@ public class QuizActivity extends AppCompatActivity implements Runnable, LoaderM
             Button.OnClickListener onClickListener = new Button.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    judgeAnswer((Button) view);
+                    judgeAnswer((TextView) view);
                     nowQuestionNum++;
                     counter_View.setText(String.format("第%02d問", nowQuestionNum));
                     setQuestion();
@@ -318,16 +318,16 @@ public class QuizActivity extends AppCompatActivity implements Runnable, LoaderM
                 }
             };
 
-            btAnswer1 = (Button)findViewById(R.id.btAnswer_1);
+            btAnswer1 = (TextView) findViewById(R.id.btAnswer_1);
             btAnswer1.setOnClickListener(onClickListener);
             TFImage1  = (ImageView)findViewById(R.id.check_TF_1);
-            btAnswer2 = (Button)findViewById(R.id.btAnswer_2);
+            btAnswer2 = (TextView) findViewById(R.id.btAnswer_2);
             btAnswer2.setOnClickListener(onClickListener);
             TFImage2  = (ImageView)findViewById(R.id.check_TF_2);
-            btAnswer3 = (Button)findViewById(R.id.btAnswer_3);
+            btAnswer3 = (TextView) findViewById(R.id.btAnswer_3);
             btAnswer3.setOnClickListener(onClickListener);
             TFImage3  = (ImageView)findViewById(R.id.check_TF_3);
-            btAnswer4 = (Button)findViewById(R.id.btAnswer_4);
+            btAnswer4 = (TextView) findViewById(R.id.btAnswer_4);
             btAnswer4.setOnClickListener(onClickListener);
             TFImage4  = (ImageView)findViewById(R.id.check_TF_4);
 
