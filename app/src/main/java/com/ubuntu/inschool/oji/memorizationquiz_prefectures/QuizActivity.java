@@ -28,6 +28,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.text.Format;
 import java.util.ArrayList;
@@ -41,6 +42,9 @@ import java.util.Map;
 import cz.msebera.android.httpclient.Header;
 
 public class QuizActivity extends AppCompatActivity implements Runnable, LoaderManager.LoaderCallbacks<JSONArray> {
+
+    public static final String INTENTKEY_MAP = "key";
+    public static final String INTENTKEY_NUM = "questionNumbers";
 
     private ProgressDialog progressDialog   = null;
     private Thread         thread           = null;
@@ -74,11 +78,13 @@ public class QuizActivity extends AppCompatActivity implements Runnable, LoaderM
     private Map<Integer, Map<String, String>>       prefecturs_Name     = new HashMap<>();          //番号：都道府県：県庁所在地
     private List<String>                            prefecturs_dummy    = new ArrayList<>();        //ダミー用
     private List<String>                            answers             = new ArrayList<>();
-    private int                                     questionsNumber     = 10;
+    private Map<String, String>                     missMap             = new HashMap<>();
     private int                                     nowQuestionNum      = 1;
+    private int                                     questionsNumber;
 
     //ランダム変数
     private ShuffleRandom setQuestionRandom, setAnswersRnadom,dummyRandom;
+    private int randomQuestionNumber;
 
     private String question_data = "";
     private String answer_data   = "";
@@ -250,12 +256,12 @@ public class QuizActivity extends AppCompatActivity implements Runnable, LoaderM
 
     public void setQuestion() {
 
-        int r = setQuestionRandom.getRandomInt();
+        randomQuestionNumber = setQuestionRandom.getRandomInt();
 
-        if (!prefecturs_Name.get(r).isEmpty()) {
-        Iterator<String> iterator = prefecturs_Name.get(r).keySet().iterator();
+        if (!prefecturs_Name.get(randomQuestionNumber).isEmpty()) {
+        Iterator<String> iterator = prefecturs_Name.get(randomQuestionNumber).keySet().iterator();
             question_data = iterator.next();
-            answer_data   = prefecturs_Name.get(r).get(question_data);
+            answer_data   = prefecturs_Name.get(randomQuestionNumber).get(question_data);
         question_View.setText(question_data);
         }
         answers.add(answer_data);
@@ -280,7 +286,11 @@ public class QuizActivity extends AppCompatActivity implements Runnable, LoaderM
         String userAnswer = textView.getText().toString();
         boolean isAnswer;
         if (answer_data.equals(userAnswer)) isAnswer = true;
-        else                                isAnswer = false;
+        else {
+            isAnswer = false;
+            String question = question_View.getText().toString();
+            missMap.put(question, answer_data);
+        }
 
         if (textView == btAnswer1) setImage(TFImage1, isAnswer);
         if (textView == btAnswer2) setImage(TFImage2, isAnswer);
@@ -325,6 +335,12 @@ public class QuizActivity extends AppCompatActivity implements Runnable, LoaderM
                 public void onClick(View view) {
                     judgeAnswer((TextView) view);
                     nowQuestionNum++;
+                    if (nowQuestionNum >= questionsNumber + 1) {
+                        Intent intent = new Intent(QuizActivity.this, ResultActivity.class);
+                        intent.putExtra(QuizActivity.INTENTKEY_MAP, (Serializable) missMap);
+                        intent.putExtra(QuizActivity.INTENTKEY_NUM, questionsNumber);
+                        startActivity(intent);
+                    }
                     counter_View.setText(String.format("第%02d問", nowQuestionNum));
                     setQuestion();
                     setAnswers();
