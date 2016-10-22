@@ -14,6 +14,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -26,8 +27,10 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.io.UnsupportedEncodingException;
+import java.text.Format;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Formatter;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -40,11 +43,19 @@ public class QuizActivity extends AppCompatActivity implements Runnable, LoaderM
     private ProgressDialog progressDialog   = null;
     private Thread         thread           = null;
 
+    private TextView       counter_View     = null;
     private TextView       question_View    = null;
+
     private Button         btAnswer1        = null;
     private Button         btAnswer2        = null;
     private Button         btAnswer3        = null;
     private Button         btAnswer4        = null;
+
+    private ImageView      TFImage1         = null;
+    private ImageView      TFImage2         = null;
+    private ImageView      TFImage3         = null;
+    private ImageView      TFImage4         = null;
+    private ImageView      selectedImage    = null;
 
     private JSONLoader     jsonLoader       = null;
     private JSONObject     object           = null;
@@ -62,13 +73,15 @@ public class QuizActivity extends AppCompatActivity implements Runnable, LoaderM
     private List<String>                            prefecturs_dummy    = new ArrayList<>();        //ダミー用
     private List<String>                            answers             = new ArrayList<>();
     private int                                     questionsNumber     = 10;
-    private int                                     nowQuestionNum      = 0;
+    private int                                     nowQuestionNum      = 1;
 
     //ランダム変数
     private ShuffleRandom setQuestionRandom, setAnswersRnadom,dummyRandom;
 
     private String question_data = "";
     private String answer_data   = "";
+
+    private boolean isAnswered = false;
 
 
     @Override
@@ -192,6 +205,7 @@ public class QuizActivity extends AppCompatActivity implements Runnable, LoaderM
         }
     }
 
+    //CSV解析
     public void parseCSV(FileManager fileManager, Datatype datatype) {
         String csv = fileManager.read();
         int count = 0;
@@ -257,23 +271,48 @@ public class QuizActivity extends AppCompatActivity implements Runnable, LoaderM
     //判定
     public void judgeAnswer(Button button) {
         String userAnswer = button.getText().toString();
-        if (answer_data.equals(userAnswer)) {
-            Toast.makeText(this, "正解！", Toast.LENGTH_SHORT).show();
-        } else {
-            Toast.makeText(this,"残念",Toast.LENGTH_SHORT).show();
-        }
+        boolean isAnswer;
+        if (answer_data.equals(userAnswer)) isAnswer = true;
+        else                                isAnswer = false;
+
+        if (button == btAnswer1) setImage(TFImage1, isAnswer);
+        if (button == btAnswer2) setImage(TFImage2, isAnswer);
+        if (button == btAnswer3) setImage(TFImage3, isAnswer);
+        if (button == btAnswer4) setImage(TFImage4, isAnswer);
+
+        isAnswered = !isAnswered;
+   }
+
+    public void setImage(ImageView image, boolean tf) {
+        selectedImage = image;
+        if (tf)  selectedImage.setImageResource(R.drawable.true_img);
+        if (!tf) selectedImage.setImageResource(R.drawable.false_img);
+
+        Handler  handler  = new Handler();
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                selectedImage.setVisibility(View.INVISIBLE);
+            }
+        };
+        handler.postDelayed(runnable, 1000);
+//        selectedImage = null;
     }
 
     private Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
 
-            question_View = (TextView)findViewById(R.id.prefecturesName);
+            question_View   = (TextView)findViewById(R.id.prefecturesName);
+            counter_View    = (TextView)findViewById(R.id.counter);
+            counter_View.setText(String.format("第%02d問",nowQuestionNum));
 
             Button.OnClickListener onClickListener = new Button.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    judgeAnswer((Button)view);
+                    judgeAnswer((Button) view);
+                    nowQuestionNum++;
+                    counter_View.setText(String.format("第%02d問", nowQuestionNum));
                     setQuestion();
                     setAnswers();
                 }
@@ -281,12 +320,16 @@ public class QuizActivity extends AppCompatActivity implements Runnable, LoaderM
 
             btAnswer1 = (Button)findViewById(R.id.btAnswer_1);
             btAnswer1.setOnClickListener(onClickListener);
+            TFImage1  = (ImageView)findViewById(R.id.check_TF_1);
             btAnswer2 = (Button)findViewById(R.id.btAnswer_2);
             btAnswer2.setOnClickListener(onClickListener);
+            TFImage2  = (ImageView)findViewById(R.id.check_TF_2);
             btAnswer3 = (Button)findViewById(R.id.btAnswer_3);
             btAnswer3.setOnClickListener(onClickListener);
+            TFImage3  = (ImageView)findViewById(R.id.check_TF_3);
             btAnswer4 = (Button)findViewById(R.id.btAnswer_4);
             btAnswer4.setOnClickListener(onClickListener);
+            TFImage4  = (ImageView)findViewById(R.id.check_TF_4);
 
             getLoaderManager().initLoader(0,null,QuizActivity.this);
 //            if (isOnline()) {
