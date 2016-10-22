@@ -5,6 +5,8 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.Loader;
+import android.media.AudioManager;
+import android.media.SoundPool;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Handler;
@@ -81,8 +83,10 @@ public class QuizActivity extends AppCompatActivity implements Runnable, LoaderM
     private String question_data = "";
     private String answer_data   = "";
 
-    private boolean isAnswered = false;
+    private boolean   isAnswered = false;
 
+    private SoundPlay soundTrue  = null;
+    private SoundPlay soundFalse = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -113,6 +117,9 @@ public class QuizActivity extends AppCompatActivity implements Runnable, LoaderM
         DFileManager = new FileManager(new File(getFilesDir().toString() + "/" + DFILENAME));
         setQuestionRandom = new ShuffleRandom(1, MainActivity.PREFECTURSNUMBER);
         setAnswersRnadom = new ShuffleRandom(1,4);
+        soundTrue  = new SoundPlay(this, R.raw.true_sound);
+        soundFalse = new SoundPlay(this, R.raw.false_sound);
+
 
         try {
             Thread.sleep(1800);
@@ -286,8 +293,14 @@ public class QuizActivity extends AppCompatActivity implements Runnable, LoaderM
     public void setImage(final ImageView image, boolean tf) {
         image.setVisibility(View.VISIBLE);
         selectedImage = image;
-        if (tf)  image.setImageResource(R.drawable.true_img);
-        if (!tf) image.setImageResource(R.drawable.false_img);
+        if (tf)  {
+            soundTrue.play();
+            image.setImageResource(R.drawable.true_img);
+        }
+        if (!tf) {
+            soundFalse.play();
+            image.setImageResource(R.drawable.false_img);
+        }
 
         Handler  handler  = new Handler();
         Runnable runnable = new Runnable() {
