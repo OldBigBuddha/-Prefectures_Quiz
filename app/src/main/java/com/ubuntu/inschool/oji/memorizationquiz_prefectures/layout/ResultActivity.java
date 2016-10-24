@@ -1,4 +1,4 @@
-package com.ubuntu.inschool.oji.memorizationquiz_prefectures;
+package com.ubuntu.inschool.oji.memorizationquiz_prefectures.layout;
 
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
@@ -7,6 +7,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
+
+import com.ubuntu.inschool.oji.memorizationquiz_prefectures.MapAdapter;
+import com.ubuntu.inschool.oji.memorizationquiz_prefectures.R;
 
 import java.util.ArrayList;
 import java.util.List;

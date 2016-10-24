@@ -1,19 +1,22 @@
-package com.ubuntu.inschool.oji.memorizationquiz_prefectures;
+package com.ubuntu.inschool.oji.memorizationquiz_prefectures.layout;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.LinearLayout;
 
-import java.io.BufferedReader;
+import com.ubuntu.inschool.oji.memorizationquiz_prefectures.R;
 
 public class MainActivity extends AppCompatActivity {
 
-    private Button btStartQuiz  = null;
-    private Button btStartStudy = null;
+    private LinearLayout    linearLayout = null;
+    private Button          btStartQuiz  = null;
+    private Button          btStartStudy = null;
 
     private Intent  intent   = null;
     private int     count    = 0;
@@ -29,6 +32,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        linearLayout = (LinearLayout)findViewById(R.id.linearLayout);
         btStartQuiz  = (Button)findViewById(R.id.quizButton);
         btStartQuiz.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -73,6 +77,14 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         btStartStudy = (Button)findViewById(R.id.studyButton);
+        btStartStudy.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Snackbar.make(linearLayout, "ごめんなさい！、未実装です\nしばらく待っててね！", Snackbar.LENGTH_SHORT).show();
+//                Intent intent = new Intent(MainActivity.this, SelectLocalWhichStudyActivity.class);
+//                startActivity(intent);
+            }
+        });
 
     }
 }

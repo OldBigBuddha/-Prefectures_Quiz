@@ -21,14 +21,14 @@ public class ShuffleRandom {
         initRandom();
     }
 
-    protected Integer getRandomInt() {
+    public Integer getRandomInt() {
         count++;
         if (count > max) return null;
-        return randomList.get(count);
+        return randomList.get(count - 1);
     }
 
     private void initRandom() {
-        for (int i = min; i <= max; i++) {
+        for (int i = min; i < max; i++) {
             randomList.add(i);
         }
         Collections.shuffle(randomList);

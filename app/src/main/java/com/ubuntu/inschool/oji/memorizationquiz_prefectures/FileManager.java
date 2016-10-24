@@ -2,7 +2,8 @@ package com.ubuntu.inschool.oji.memorizationquiz_prefectures;
 
 import android.util.Log;
 
-import java.io.BufferedInputStream;
+import com.ubuntu.inschool.oji.memorizationquiz_prefectures.layout.MainActivity;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;

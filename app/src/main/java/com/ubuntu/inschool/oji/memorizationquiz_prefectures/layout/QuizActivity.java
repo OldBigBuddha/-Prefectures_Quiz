@@ -1,12 +1,10 @@
-package com.ubuntu.inschool.oji.memorizationquiz_prefectures;
+package com.ubuntu.inschool.oji.memorizationquiz_prefectures.layout;
 
 import android.app.LoaderManager;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.Loader;
-import android.media.AudioManager;
-import android.media.SoundPool;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Handler;
@@ -18,10 +16,14 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
+import com.ubuntu.inschool.oji.memorizationquiz_prefectures.FileManager;
+import com.ubuntu.inschool.oji.memorizationquiz_prefectures.JSONLoader;
+import com.ubuntu.inschool.oji.memorizationquiz_prefectures.R;
+import com.ubuntu.inschool.oji.memorizationquiz_prefectures.ShuffleRandom;
+import com.ubuntu.inschool.oji.memorizationquiz_prefectures.SoundPlay;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -30,10 +32,8 @@ import org.json.JSONObject;
 import java.io.File;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
-import java.text.Format;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Formatter;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -63,7 +63,7 @@ public class QuizActivity extends AppCompatActivity implements Runnable, LoaderM
     private ImageView      TFImage4         = null;
     private ImageView      selectedImage    = null;
 
-    private JSONLoader     jsonLoader       = null;
+    private JSONLoader jsonLoader       = null;
     private JSONObject     object           = null;
 
     private final String   FILES            = "files";
@@ -71,7 +71,7 @@ public class QuizActivity extends AppCompatActivity implements Runnable, LoaderM
     private final String   QFILENAME        = "Todoufuken_Kenchoushozaichi.csv";
     private final String   DFILENAME        = "Dummy.csv";
 
-    private FileManager    QFileManager     = null;
+    private FileManager QFileManager     = null;
     private FileManager    DFileManager     = null;
 
     //問題・ダミーデータ
@@ -121,7 +121,7 @@ public class QuizActivity extends AppCompatActivity implements Runnable, LoaderM
     public void run() {
         QFileManager = new FileManager(new File(getFilesDir().toString() + "/" + QFILENAME));
         DFileManager = new FileManager(new File(getFilesDir().toString() + "/" + DFILENAME));
-        setQuestionRandom = new ShuffleRandom(1, MainActivity.PREFECTURSNUMBER);
+        setQuestionRandom = new ShuffleRandom(1, MainActivity.PREFECTURSNUMBER + 1);
         setAnswersRnadom = new ShuffleRandom(1,4);
         soundTrue  = new SoundPlay(this, R.raw.true_sound);
         soundFalse = new SoundPlay(this, R.raw.false_sound);
